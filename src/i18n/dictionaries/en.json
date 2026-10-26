@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "title": "Islamic Platform",
+    "description": "Quran, worship and a verified library — in Arabic and English"
+  },
+  "nav": {
+    "home": "Home",
+    "quran": "Quran",
+    "prayer": "Prayer",
+    "library": "Library",
+    "learn": "Learn",
+    "studio": "Studio",
+    "admin": "Admin",
+    "language": "Language"
+  },
+  "home": {
+    "hero": {
+      "title": "A bilingual Islamic and educational platform",
+      "subtitle": "Quran, acts of worship and a verified library in one place, in Arabic and English."
+    },
+    "cta": {
+      "quran": "Open the mushaf",
+      "prayer": "Prayer times",
+      "library": "Browse the library"
+    },
+    "status": {
+      "heading": "Platform status",
+      "body": "This is a foundational interface under construction. Integrations (audio studio and channel linking) are in technical verification and are not presented as ready features.",
+      "link": "See the roadmap"
+    }
+  },
+  "status": {
+    "planned": "Planned",
+    "verifying": "In verification",
+    "approved": "Approved to build",
+    "released": "Released"
+  },
+  "quran": {
+    "title": "The Noble Quran",
+    "intro": "Mushaf view, search and bookmarks — text from a cited, verified source.",
+    "search": "Search the Quran…",
+    "bookmarks": "My bookmarks",
+    "source": "Source and attribution are shown with every text."
+  },
+  "prayer": {
+    "title": "Prayer and worship",
+    "intro": "Prayer times, qibla direction, adhkar and the Hijri calendar.",
+    "times": "Prayer times",
+    "qibla": "Qibla direction",
+    "adhkar": "Adhkar",
+    "calendar": "Hijri calendar"
+  },
+  "library": {
+    "title": "Islamic library",
+    "intro": "Verified content with clear sources and declared usage rights.",
+    "source": "Source",
+    "license": "License"
+  },
+  "learn": {
+    "title": "Learning and courses",
+    "intro": "Lessons, progress and quizzes."
+  },
+  "studio": {
+    "title": "Production studio",
+    "intro": "Audio separation and channel linking are in feasibility testing.",
+    "audio": {
+      "heading": "Audio studio",
+      "body": "Separation quality, processing cost and licensed source files are being validated before any launch."
+    },
+    "creator": {
+      "heading": "Creator Studio",
+      "body": "Testing authorized channel linking, data reading and uploads within real quota limits."
+    },
+    "gate": "These services are not available to users yet."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "The link may have changed or the page was removed.",
+    "back": "Back to home"
+  },
+  "footer": {
+    "docs": "Product documents and plans",
+    "status": "Build status: technical foundation in progress"
+  }
+}

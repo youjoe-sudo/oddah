@@ -177,11 +177,26 @@ CREATE TABLE daily_goals (
 
 -- ---------------------------------------------------------------------
 -- 4) صلاحيات الدور وسياسات RLS
+--    الدور `app_client` يُنشأ هنا. على Supabase يدعم الإنشاء دور postgres
+--    (الأدوار المخصّصة ميزة موثّقة)، وإن رُفض فراجع docs/08-supabase-setup.md.
+--    بدون دور غير مالك يتجاوز RLS كل شيء (المالك لا يخضع لسياسات RLS).
 -- ---------------------------------------------------------------------
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'app_client') THEN
-    CREATE ROLE app_client NOLOGIN;
+    EXECUTE 'CREATE ROLE app_client NOLOGIN';
+  END IF;
+
+  -- منح دور الاتصال الحالي عضوية app_client حتى ينجح `SET LOCAL ROLE`.
+  -- (على Supabase دور الاتصال هو `postgres` وليس superuser.)
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_auth_members m
+    JOIN pg_roles r ON r.oid = m.roleid
+    WHERE r.rolname = 'app_client'
+      AND m.member = (SELECT oid FROM pg_roles WHERE rolname = current_user)
+  ) THEN
+    EXECUTE format('GRANT app_client TO %I', current_user);
   END IF;
 END $$;
 

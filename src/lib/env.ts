@@ -4,6 +4,14 @@ const schema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   DATABASE_URL: z.string().url().optional(),
   SESSION_SECRET: z.string().min(32).optional(),
+  /**
+   * دور PostgreSQL الذي يُنفَّذ فيه كل استعلام تطبيقي (بعد `SET LOCAL ROLE`).
+   * على Supabase: دور مخصص يُنشأ من الترحيل (`app_client`) — راجع docs/08-supabase-setup.md
+   */
+  DB_CLIENT_ROLE: z
+    .string()
+    .regex(/^[a-z_][a-z0-9_]*$/i, 'must be a plain identifier')
+    .default('app_client'),
 });
 
 export type Env = z.infer<typeof schema>;

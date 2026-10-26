@@ -14,7 +14,7 @@
 | الصوتيات | مصادر مرخصة أولًا — لا استيراد قبل إثبات الإذن |
 | YouTube / Creator Studio | **مرحلة تحقق** — لا وعود قبل POC وقياس فعلي |
 | المراجعة الشرعية | لجنة داخلية (2–3 أعضاء) + إحالة خارجية للخلاف |
-| التقنية | Next.js (TypeScript) + PostgreSQL مع RLS |
+| التقنية | Next.js (TypeScript) + **Supabase** كقاعدة بيانات مُدارة مع RLS — طبقة وصول تُمكّن الاستبدال لاحقًا (`docs/08-supabase-setup.md`) |
 
 ---
 
@@ -29,6 +29,7 @@ docs/
   05-shariah-review.md    لجنة المراجعة الشرعية وسير العمل
   06-roadmap.md           خارطة الطريق وسجل المخاطر
   07-data-model.md        نموذج البيانات وسياسات RLS
+  08-supabase-setup.md    ربط Supabase والاستبدال لاحقًا
 db/migrations/            ترحيلات قاعدة البيانات (مسودة مراجَعة)
 src/
   app/[locale]/           الصفحات (ar/en)
@@ -44,16 +45,21 @@ scripts/                  أدوات تشغيلية (ترحيل القاعدة)
 
 ### المتطلبات
 - Node.js 20.10+ (مُختبَر على v26)
-- Docker (لتشغيل PostgreSQL محليًا)
+- مشروع Supabase (المسار المعتمد) — أو Docker لتطوير محلي بديل
 
 ### الخطوات
 
 ```bash
 npm install
-cp .env.example .env          # ثم عدّل القيم
-docker compose up -d          # تشغيل PostgreSQL
-npm run db:migrate            # تطبيق الترحيلات
+cp .env.example .env          # ثم ضع DATABASE_URL من Supabase (مع ?sslmode=require)
+npm run db:migrate            # ينشئ الدور وسياسات RLS على القاعدة
 npm run dev                   # http://localhost:3000
+```
+
+**بدون Supabase (تطوير محلي بديل):**
+```bash
+docker compose up -d          # PostgreSQL محلي معزول
+npm run db:migrate
 ```
 
 ### الأوامر
@@ -64,7 +70,8 @@ npm run dev                   # http://localhost:3000
 | `npm run build` | بناء الإنتاج |
 | `npm run lint` | فحص الأسلوب |
 | `npm run typecheck` | فحص الأنواع |
-| `npm test` | الاختبارات (تشمل اكتمال القاموس عربي/إنجليزي) |
+| `npm test` | الاختبارات: اكتمال القاموس + **8 اختبارات RLS على Postgres حقيقي مدمج** |
+| `TEST_DATABASE_URL=... npm test` | تشغيل اختبارات RLS على قاعدة حقيقية (Supabase) |
 | `npm run db:migrate` | تطبيق ترحيلات قاعدة البيانات |
 
 ---

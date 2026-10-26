@@ -1,4 +1,5 @@
-# PostgreSQL — بيئات منفصلة (development / test / production)
+# PostgreSQL — بديل محلي اختياري للتطوير بدون Supabase
+# المسار المعتمد: Supabase (انظر docs/08-supabase-setup.md)
 services:
   postgres:
     image: postgres:16-alpine

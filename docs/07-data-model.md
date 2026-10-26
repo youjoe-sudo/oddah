@@ -93,11 +93,15 @@ creator_channels ── creator_projects ─┬─ video_assets
 
 ## 4. سياسات RLS (النمط المعتمد)
 
-**النمط:** كل استعلام من التطبيق يمرّ عبر معاملة تضبط معرّف المستخدم الحالي، والسياسات تقرأ منه:
+**النمط:** كل استعلام من التطبيق يمرّ بثلاث خطوات إلزامية داخل معاملة واحدة (`src/lib/db.ts`):
 
 ```sql
-SET LOCAL app.user_id = '<uuid>';
-SET LOCAL app.user_role = 'user';
+BEGIN;
+SET LOCAL ROLE app_client;                          -- 1) دور غير مالك (المالك يتجاوز RLS)
+SELECT set_config('app.user_id', '<uuid>', true);   -- 2) سياق المستخدم
+SELECT set_config('app.user_role', 'user', true);   -- 3) سياق الدور التطبيق
+-- ... الاستعلامات ...
+COMMIT;
 ```
 
 ```sql
@@ -149,13 +153,17 @@ CREATE POLICY bookmarks_owner_all ON bookmarks
 
 ## 7. بيئة التشغيل
 
+**المسار المعتمد:** Supabase (Postgres مُدار) — راجع `docs/08-supabase-setup.md` للخطوات ونقاط الاستبدال.
+
 | البيئة | الغرض |
 | --- | --- |
-| `development` | عمل يومي، بيانات تجريبية |
-| `test` | اختبارات آلية معزولة (قاعدة لكل تشغيل) |
+| `development` | عمل يومي على قاعدة التطوير في Supabase، بيانات تجريبية |
+| `test` | اختبارات آلية معزولة — تُشغَّل على Postgres مدمج (PGlite) أو على قاعدة حقيقية عبر `TEST_DATABASE_URL` |
 | `production` | الإنتاج فقط — لا بيانات تجريبية |
 
-**متطلب تشغيلي:** لا يوجد PostgreSQL محلي في بيئة التطوير الحالية → يُشغَّل عبر **Docker** (`docker-compose.yml` في جذر المستودع) مع منفذ معزول وبيانات دخول في `.env` غير مُرحَّل.
+**بديل محلي:** `docker-compose.yml` يظل متاحًا للتطوير بدون إنترنت أو بدون حساب Supabase، ونفس الترحيلات تعمل عليه دون أي تعديل.
+
+**متطلب تشغيلي:** بيانات الاتصال (`DATABASE_URL`) في `.env` غير المرحّل فقط، مع `?sslmode=require` عند استخدام Supabase.
 
 ---
 

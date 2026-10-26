@@ -1,15 +1,22 @@
 import { readFileSync } from 'node:fs';
 import { PGlite } from '@electric-sql/pglite';
 import { citext } from '@electric-sql/pglite/contrib/citext';
+import { Client } from 'pg';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 /**
- * اختبارات RLS على ترحيل مرحلة صفر داخل Postgres حقيقي (PGlite).
- * تتحقق من المعايير المذكورة في docs/07-data-model.md §4:
+ * اختبارات RLS لترحيل مرحلة صفر.
+ *
+ * تُشغَّل على Postgres حقيقي مدمج (PGlite) افتراضيًا، أو على قاعدة حقيقية
+ * (بما فيها Supabase) عند ضبط TEST_DATABASE_URL:
+ *
+ *   TEST_DATABASE_URL="postgresql://...?sslmode=require" npm test
+ *
+ * تتحقق من المعايير في docs/07-data-model.md §4:
  *  1) مستخدم لا يقرأ بيانات مستخدم آخر
- *  2) عدم اعتماد الصلاحية على قيمة يتحكم بها المتصفح
- *  3) عدم وصول دور عادي لسجل التدقيق أو الأدوار
- *  4) كل سياسة مفعّلة فعليًا (لا RLS معطّل صامتًا)
+ *  2) العزل لا يعتمد على قيمة يتحكم بها المتصفح
+ *  3) لا وصول دور عادي لسجل التدقيق أو الأدوار
+ *  4) كل سياسة مفعّلة فعلًا (لا RLS معطّل صامتًا)
  */
 
 const USER_A = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
@@ -19,15 +26,52 @@ const PUBLISHED_ID = 'dddddddd-dddd-dddd-dddd-dddddddddddd';
 const DRAFT_ID = 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee';
 
 const migrationSql = readFileSync(new URL('./migrations/0001_phase0.sql', import.meta.url), 'utf8');
+const liveUrl = process.env.TEST_DATABASE_URL;
 
-let db: PGlite;
+type Rows = Record<string, unknown>[];
+
+type TestDb = {
+  kind: 'embedded' | 'live';
+  query(sql: string, params?: unknown[]): Promise<Rows>;
+  exec(sql: string): Promise<void>;
+  close(): Promise<void>;
+};
+
+async function openDb(): Promise<TestDb> {
+  if (liveUrl) {
+    const client = new Client({ connectionString: liveUrl });
+    await client.connect();
+    return {
+      kind: 'live',
+      query: async (sql, params) =>
+        (await client.query(sql, params as never[])).rows as Rows,
+      exec: async (sql) => {
+        await client.query(sql);
+      },
+      close: async () => {
+        await client.end();
+      },
+    };
+  }
+
+  const embedded = new PGlite({ extensions: { citext } });
+  return {
+    kind: 'embedded',
+    query: async (sql, params) =>
+      (await embedded.query(sql, params as never[])).rows as Rows,
+    exec: async (sql) => {
+      await embedded.exec(sql);
+    },
+    close: async () => {
+      await embedded.close();
+    },
+  };
+}
+
+let db: TestDb;
 
 /** ينفّذ استعلامًا كأنه مستخدم معيّن عبر دور `app_client` وسياق RLS. */
-async function asUser<T>(
-  userId: string,
-  role: string,
-  run: () => Promise<T>,
-): Promise<T> {
+async function asUser<T>(userId: string, role: string, run: () => Promise<T>): Promise<T> {
   await db.query('SET ROLE app_client');
   await db.query("SELECT set_config('app.user_id', $1, false)", [userId]);
   await db.query("SELECT set_config('app.user_role', $1, false)", [role]);
@@ -40,40 +84,60 @@ async function asUser<T>(
   }
 }
 
-async function rows(sql: string): Promise<Record<string, unknown>[]> {
-  return (await db.query(sql)).rows as Record<string, unknown>[];
+async function rows(sql: string): Promise<Rows> {
+  return db.query(sql);
 }
 
 beforeAll(async () => {
-  db = new PGlite({ extensions: { citext } });
-  await db.exec(migrationSql);
+  db = await openDb();
+
+  // على قاعدة حقيقية يكون الترحيل مطبَّقًا مسبقًا عبر `npm run db:migrate`
+  const applied = await db.query(`SELECT to_regclass('public.users') AS name`);
+  if (!applied[0].name) {
+    await db.exec(migrationSql);
+  }
 
   await db.exec(`
     INSERT INTO users (id, email) VALUES
-      ('${USER_A}', 'a@example.com'),
-      ('${USER_B}', 'b@example.com');
+      ('${USER_A}', 'rls-test-a@example.com'),
+      ('${USER_B}', 'rls-test-b@example.com')
+    ON CONFLICT DO NOTHING;
 
     INSERT INTO profiles (user_id, display_name) VALUES
       ('${USER_A}', 'مستخدم أ'),
-      ('${USER_B}', 'مستخدم ب');
+      ('${USER_B}', 'مستخدم ب')
+    ON CONFLICT DO NOTHING;
 
     INSERT INTO content_sources (id, name, license, verification_status, allows_processing)
-    VALUES ('${SOURCE_ID}', 'Tanzil', 'CC BY 3.0', 'verified', true);
+    VALUES ('${SOURCE_ID}', 'Tanzil', 'CC BY 3.0', 'verified', true)
+    ON CONFLICT DO NOTHING;
 
     INSERT INTO content_items (id, type, slug, title_ar, source_id, status, created_by)
     VALUES
-      ('${PUBLISHED_ID}', 'quran_surah', 'al-fatiha', 'الفاتحة', '${SOURCE_ID}', 'published', '${USER_A}'),
-      ('${DRAFT_ID}', 'article', 'draft-note', 'مسودة', '${SOURCE_ID}', 'draft', '${USER_A}');
+      ('${PUBLISHED_ID}', 'quran_surah', 'rls-al-fatiha', 'الفاتحة', '${SOURCE_ID}', 'published', '${USER_A}'),
+      ('${DRAFT_ID}', 'article', 'rls-draft-note', 'مسودة', '${SOURCE_ID}', 'draft', '${USER_A}')
+    ON CONFLICT DO NOTHING;
 
-    INSERT INTO audit_logs (actor_user_id, action) VALUES ('${USER_A}', 'seed');
+    INSERT INTO audit_logs (actor_user_id, action) VALUES ('${USER_A}', 'seed')
+    ON CONFLICT DO NOTHING;
   `);
 });
 
 afterAll(async () => {
-  await db.close();
+  if (db) {
+    await db.exec(`
+      DELETE FROM bookmarks WHERE user_id = '${USER_A}';
+      DELETE FROM reading_progress WHERE user_id = '${USER_A}';
+      DELETE FROM daily_goals WHERE user_id = '${USER_A}';
+      DELETE FROM content_items WHERE id IN ('${PUBLISHED_ID}', '${DRAFT_ID}');
+      DELETE FROM content_sources WHERE id = '${SOURCE_ID}';
+      DELETE FROM users WHERE id IN ('${USER_A}', '${USER_B}');
+    `).catch(() => undefined);
+    await db.close();
+  }
 });
 
-describe('RLS — العزل بين المستخدمين', () => {
+describe(`RLS — العزل بين المستخدمين`, () => {
   it('الملف الشخصي لا يُرى إلا من صاحبه', async () => {
     const own = await asUser(USER_A, 'user', () => rows('SELECT user_id FROM profiles'));
     expect(own).toHaveLength(1);
@@ -90,7 +154,7 @@ describe('RLS — العزل بين المستخدمين', () => {
     await asUser(USER_A, 'user', async () => {
       await db.query(
         `INSERT INTO bookmarks (user_id, content_item_id, anchor)
-         VALUES ($1, $2, '1:1')`,
+         VALUES ($1, $2, '1:1') ON CONFLICT DO NOTHING`,
         [USER_A, PUBLISHED_ID],
       );
     });
@@ -117,14 +181,14 @@ describe('RLS — العزل بين المستخدمين', () => {
 describe('RLS — المحتوى والأدوار', () => {
   it('الدور العادي يرى المنشور فقط دون المسودات', async () => {
     const visible = await asUser(USER_B, 'user', () =>
-      rows('SELECT id FROM content_items ORDER BY created_at'),
+      rows(`SELECT id FROM content_items WHERE created_by = '${USER_A}'`),
     );
     expect(visible.map((r) => r.id)).toEqual([PUBLISHED_ID]);
   });
 
   it('دور المراجعة يرى المحتوى قيد العمل', async () => {
     const visible = await asUser(USER_A, 'reviewer', () =>
-      rows('SELECT id FROM content_items ORDER BY slug'),
+      rows(`SELECT id FROM content_items WHERE created_by = '${USER_A}'`),
     );
     expect(visible).toHaveLength(2);
   });
@@ -155,14 +219,14 @@ describe('RLS — المحتوى والأدوار', () => {
       asUser(USER_A, 'user', () =>
         db.query(
           `INSERT INTO content_items (type, slug, title_ar, status, created_by)
-           VALUES ('article', 'no-source', 'بدون مصدر', 'published', $1)`,
+           VALUES ('article', 'rls-no-source', 'بدون مصدر', 'published', $1)`,
           [USER_A],
         ),
       ),
     ).rejects.toThrow(/content_published_needs_source/);
   });
 
-  it('السياسة فعّالة فعلًا: بدون سياق مستخدم لا يُرى شيء خاص', async () => {
+  it('السياسة فعّلة فعلًا: بدون سياق مستخدم لا يُرى شيء خاص', async () => {
     await db.query('SET ROLE app_client');
     try {
       const profiles = await rows('SELECT user_id FROM profiles');

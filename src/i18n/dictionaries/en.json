@@ -57,7 +57,14 @@
     "ayahLabel": "Ayah",
     "previousSurah": "Previous surah",
     "nextSurah": "Next surah",
-    "backToIndex": "Back to the index"
+    "backToIndex": "Back to the index",
+    "searchTitle": "Search the Quran",
+    "searchHint": "Type at least two characters. Search ignores diacritics and hamza variants (أ إ آ ٱ) and folds ta marbuta and alef maqsura.",
+    "searchGo": "Search",
+    "searchResults": "Results: {count}",
+    "searchTruncated": "Showing the first {limit} results — refine your search.",
+    "searchEmpty": "No matching results.",
+    "searchAyah": "Ayah {ayah}"
   },
   "prayer": {
     "title": "Prayer and worship",

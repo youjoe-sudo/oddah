@@ -42,6 +42,14 @@ export default async function QuranPage({ params }: Props) {
               · {surahs.length} {dict.quran.surahUnit}
             </span>
           </p>
+          <div className="mt-3">
+            <Link
+              href={`/${locale}/quran/search`}
+              className="inline-block rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+            >
+              {dict.quran.searchTitle}
+            </Link>
+          </div>
         </Card>
 
         <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">

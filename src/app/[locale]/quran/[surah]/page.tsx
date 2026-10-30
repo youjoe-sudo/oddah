@@ -68,7 +68,8 @@ export default async function SurahPage({ params }: Props) {
           {ayahs.map((text, index) => (
             <li
               key={index}
-              className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+              id={`ayah-${index + 1}`}
+              className="flex scroll-mt-24 items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
             >
               <span className="mt-1 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-xs font-medium text-slate-600 tabular-nums">
                 {formatNumber(index + 1)}

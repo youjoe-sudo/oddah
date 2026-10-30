@@ -57,7 +57,14 @@
     "ayahLabel": "الآية",
     "previousSurah": "السورة السابقة",
     "nextSurah": "السورة التالية",
-    "backToIndex": "العودة إلى الفهرس"
+    "backToIndex": "العودة إلى الفهرس",
+    "searchTitle": "البحث في القرآن",
+    "searchHint": "اكتب كلمتين على الأقل. البحث يتجاهل التشكيل واختلاف الهمزات (أ إ آ ٱ) ويوحّد التاء المربوطة والألف المقصورة.",
+    "searchGo": "بحث",
+    "searchResults": "النتائج: {count}",
+    "searchTruncated": "تُعرض أول {limit} نتيجة فقط — ضيّق البحث.",
+    "searchEmpty": "لا نتائج مطابقة.",
+    "searchAyah": "الآية {ayah}"
   },
   "prayer": {
     "title": "الصلاة والعبادات",

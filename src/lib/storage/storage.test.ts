@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { mkdtempSync, rmSync, writeFileSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -90,6 +91,64 @@ describe('بيانات المحتوى المحلية (JSON)', () => {
       expect(item.citationAr.trim()).not.toBe('');
       expect(item.textAr).toMatch(/[\u0600-\u06FF]/);
       expect(item.status).toBe('in_review');
+    }
+  });
+
+  it('نص المصحف: 114 سورة و6236 آية وعدد كل سورة يطابق الفهرس', async () => {
+    const storage = getContentStorage();
+    const { surahs } = await storage.getQuranIndex();
+    let total = 0;
+
+    for (const surah of surahs) {
+      const doc = await storage.getSurahText(surah.number);
+      expect(doc).not.toBeNull();
+      expect(doc?.ayahs).toHaveLength(surah.ayahCount);
+      for (const ayah of doc?.ayahs ?? []) {
+        expect(ayah.trim()).not.toBe('');
+        expect(ayah).toMatch(/[\u0600-\u06FF]/);
+      }
+      total += doc?.ayahs.length ?? 0;
+    }
+
+    expect(total).toBe(6236);
+  });
+
+  it('بصمة النص المخزّن تطابق بصمة الجلب (إثبات عدم التعديل)', async () => {
+    const storage = getContentStorage();
+    const meta = await storage.getQuranTextMeta();
+    const parts: string[] = [];
+
+    for (let number = 1; number <= 114; number += 1) {
+      const doc = await storage.getSurahText(number);
+      doc?.ayahs.forEach((text, index) => parts.push(`${number}|${index + 1}|${text}`));
+    }
+
+    const sha256 = createHash('sha256').update(parts.join('\n') + '\n').digest('hex');
+    expect(sha256).toBe(meta.canonicalSha256);
+  });
+
+  it('البسملة كما وردت في المصدر: مع الآية الأولى إلا الفاتحة والتوبة', async () => {
+    const storage = getContentStorage();
+    const basmala = 'بِسْمِ';
+
+    expect((await storage.getSurahText(1))?.ayahs[0].startsWith(basmala)).toBe(true);
+    expect((await storage.getSurahText(2))?.ayahs[0].startsWith(basmala)).toBe(true);
+    expect((await storage.getSurahText(9))?.ayahs[0].startsWith(basmala)).toBe(false);
+  });
+
+  it('نص المصحف فئة A: لا اعتماد دون سجل مراجع، والإسناد والرخصة مطلوبان', async () => {
+    const meta = await getContentStorage().getQuranTextMeta();
+
+    expect(meta.attribution).toContain('Tanzil');
+    expect(meta.licenseUrl.startsWith('https://')).toBe(true);
+    expect(meta.copyPolicy).toBe('verbatim-only-no-modification');
+
+    if (meta.reviewStatus === 'approved') {
+      expect(meta.reviewedBy).toBeTruthy();
+      expect(meta.reviewedAt).toBeTruthy();
+    } else {
+      expect(meta.reviewedBy).toBeNull();
+      expect(meta.reviewedAt).toBeNull();
     }
   });
 

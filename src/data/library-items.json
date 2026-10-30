@@ -19,12 +19,12 @@
     {
       "id": "lib-quran-text",
       "type": "reference",
-      "titleAr": "نص المصحف (مرجع)",
-      "titleEn": "Mushaf text (reference)",
-      "descriptionAr": "يُفعَّل بعد ربط مصدر النص واعتماد الإسناد والرخصة.",
-      "descriptionEn": "Enabled once the text source, attribution and license are confirmed.",
+      "titleAr": "نص المصحف (الرسم العثماني)",
+      "titleEn": "Mushaf text (Uthmani)",
+      "descriptionAr": "نص مستورد حرفيًا من Tanzil (CC BY 3.0) بلا أي تعديل — قيد اعتماد اللجنة الشرعية قبل الإعلان عنه.",
+      "descriptionEn": "Text imported verbatim from Tanzil (CC BY 3.0), unmodified — pending shariah sign-off before announcement.",
       "sourceId": "tanzil",
-      "status": "planned"
+      "status": "in_review"
     },
     {
       "id": "lib-hadith-sample",

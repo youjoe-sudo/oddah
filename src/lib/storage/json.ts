@@ -6,13 +6,17 @@ import {
   libraryDatasetSchema,
   sourcesDatasetSchema,
   surahDatasetSchema,
+  quranTextMetaSchema,
+  surahTextSchema,
   bookmarkSchema,
   type Adhkar,
   type Bookmark,
   type DatasetMeta,
   type LibraryItem,
+  type QuranTextMeta,
   type Source,
   type Surah,
+  type SurahText,
 } from './schemas';
 
 /**
@@ -25,7 +29,9 @@ const dataDir = () => getEnv().JSON_DATA_DIR;
 const runtimeDir = () => getEnv().JSON_RUNTIME_DIR;
 
 function readJson<T>(relativePath: string): T {
-  const path = resolve(process.cwd(), dataDir(), relativePath);
+  // turbopackIgnore: المسار قابل للتهيئة (JSON_DATA_DIR) ولا نريد أن يُضمّن
+  // المُجمِّع المشروع كله؛ الملفات تُقرأ وقت البناء/التشغيل من جذر المشروع.
+  const path = resolve(/* turbopackIgnore: true */ process.cwd(), dataDir(), relativePath);
   if (!existsSync(path)) {
     throw new Error(`Missing local dataset: ${path}`);
   }
@@ -113,6 +119,30 @@ export const jsonContentStorage = {
   },
   async getSurah(number: number): Promise<Surah | null> {
     return loadQuranIndex().surahs.find((s) => s.number === number) ?? null;
+  },
+  /** بيانات مصدر النص: الرخصة والإسناد وحالة المراجعة (تُعرض مع كل نص). */
+  async getQuranTextMeta(): Promise<QuranTextMeta> {
+    return quranTextMetaSchema.parse(readJson('quran-text/_meta.json'));
+  },
+  async getSurahText(
+    number: number,
+  ): Promise<{ meta: QuranTextMeta; surah: Surah; ayahs: string[] } | null> {
+    const surah = loadQuranIndex().surahs.find((s) => s.number === number);
+    if (!surah) return null;
+
+    const meta = quranTextMetaSchema.parse(readJson('quran-text/_meta.json'));
+    const file = `quran-text/${String(number).padStart(3, '0')}.json`;
+    const doc: SurahText = surahTextSchema.parse(readJson(file));
+
+    if (doc.surah !== number) {
+      throw new Error(`quran-text: ${file} يحتوي السورة ${doc.surah} بدل ${number}`);
+    }
+    if (doc.ayahs.length !== surah.ayahCount) {
+      throw new Error(
+        `quran-text: السورة ${number} فيها ${doc.ayahs.length} آية، والفهرس يتوقع ${surah.ayahCount}`,
+      );
+    }
+    return { meta, surah, ayahs: doc.ayahs };
   },
   async listAdhkar(): Promise<Adhkar[]> {
     return loadAdhkar();

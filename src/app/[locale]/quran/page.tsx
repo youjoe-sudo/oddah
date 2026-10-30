@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { resolvePage } from '@/i18n/page';
 import { Container } from '@/components/ui/Container';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -66,7 +67,9 @@ export default async function QuranPage({ params }: Props) {
                 <tr key={surah.number} className="border-t border-slate-100">
                   <td className="px-3 py-2 text-slate-500 tabular-nums">{surah.number}</td>
                   <td className="px-3 py-2 font-medium text-slate-900">
-                    {locale === 'ar' ? surah.nameAr : surah.nameEn}
+                    <Link href={`/${locale}/quran/${surah.number}`} className="hover:underline">
+                      {locale === 'ar' ? surah.nameAr : surah.nameEn}
+                    </Link>
                     {locale === 'en' && (
                       <span className="block text-xs font-normal text-slate-500">
                         {surah.translationEn}

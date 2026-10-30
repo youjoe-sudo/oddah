@@ -95,6 +95,47 @@ export const surahDatasetSchema = z
     });
   });
 
+export const quranTextMetaSchema = z
+  .object({
+    dataset: z.literal('quran-text'),
+    kind: z.string().min(1),
+    sourceName: z.string().min(1),
+    sourceUrl: z.string().startsWith('http'),
+    downloadUrl: z.string().startsWith('http'),
+    fetchedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    attribution: z.string().min(1),
+    license: z.string().min(1),
+    licenseUrl: z.string().startsWith('http'),
+    copyPolicy: z.literal('verbatim-only-no-modification'),
+    surahCount: z.literal(114),
+    totalAyahs: z.literal(6236),
+    rawSha256: z.string().regex(/^[a-f0-9]{64}$/),
+    canonicalSha256: z.string().regex(/^[a-f0-9]{64}$/),
+    /** فئة A (docs/05): لا تُعتبر منشورة قبل قرار لجنة مكتمل */
+    reviewStatus: z.enum(['in_review', 'approved', 'rejected']),
+    reviewedBy: z.string().min(1).nullable(),
+    reviewedAt: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .nullable(),
+    notesAr: z.string().min(1),
+    notice: z.string().min(1),
+  })
+  .superRefine((meta, ctx) => {
+    if (meta.reviewStatus === 'approved' && (!meta.reviewedBy || !meta.reviewedAt)) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'reviewStatus=approved يتطلب reviewedBy و reviewedAt (سجل مراجعة مكتمل)',
+        path: ['reviewedBy'],
+      });
+    }
+  });
+
+export const surahTextSchema = z.object({
+  surah: z.number().int().min(1).max(114),
+  ayahs: z.array(z.string().min(1)).min(3).max(286),
+});
+
 export const adhkarSchema = z.object({
   id: z.string().min(1),
   category: z.enum(['morning', 'evening', 'sleep', 'prayer', 'general']),
@@ -138,6 +179,8 @@ export const bookmarkSchema = z.object({
 export type DatasetMeta = z.infer<typeof MetaSchema>;
 export type Source = z.infer<typeof sourceSchema>;
 export type Surah = z.infer<typeof surahSchema>;
+export type QuranTextMeta = z.infer<typeof quranTextMetaSchema>;
+export type SurahText = z.infer<typeof surahTextSchema>;
 export type Adhkar = z.infer<typeof adhkarSchema>;
 export type LibraryItem = z.infer<typeof libraryItemSchema>;
 export type ContentStatus = z.infer<typeof contentStatusSchema>;

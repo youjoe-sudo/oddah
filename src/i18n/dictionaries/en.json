@@ -50,7 +50,14 @@
     "revelation": "Revealed in",
     "meccan": "Meccan",
     "medinan": "Medinan",
-    "metadataNotice": "This page shows metadata only (names and ayah counts). The mushaf text is added once its source, attribution and license are confirmed."
+    "metadataNotice": "This page shows metadata (names and ayah counts). Open any surah to read its text, sourced from Tanzil.",
+    "reading": "Surah reading",
+    "textReview": "Text pending shariah review",
+    "textSourceNotice": "Text imported verbatim from Tanzil.net with no modification (CC BY 3.0). This preview awaits shariah committee sign-off.",
+    "ayahLabel": "Ayah",
+    "previousSurah": "Previous surah",
+    "nextSurah": "Next surah",
+    "backToIndex": "Back to the index"
   },
   "prayer": {
     "title": "Prayer and worship",

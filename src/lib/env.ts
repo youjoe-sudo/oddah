@@ -12,6 +12,16 @@ const schema = z.object({
     .string()
     .regex(/^[a-z_][a-z0-9_]*$/i, 'must be a plain identifier')
     .default('app_client'),
+  /**
+   * مصدر البيانات الحالي. `json` = ملفات محلية (الافتراضي حتى أمر التبديل)،
+   * و`postgres` = مسار Supabase الجاهز وغير المفعّل بعد.
+   * راجع docs/09-local-json-storage.md
+   */
+  DATA_PROVIDER: z.enum(['json', 'postgres']).default('json'),
+  /** مجلد بيانات المحتوى المحلية (نسبي إلى جذر المشروع). */
+  JSON_DATA_DIR: z.string().min(1).default('src/data'),
+  /** مجلد حالة المستخدم المحلية (علامات القراءة وغيرها) — غير مُتتبَّع في git. */
+  JSON_RUNTIME_DIR: z.string().min(1).default('data/runtime'),
 });
 
 export type Env = z.infer<typeof schema>;

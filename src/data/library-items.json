@@ -1,0 +1,50 @@
+{
+  "_meta": {
+    "dataset": "library-items",
+    "purpose": "عينات مكتبة تُظهر قاعدة: كل قطعة لها مصدر، ولا نشر لمصدر غير موثّق",
+    "docs": "docs/01-prd.md (LIB-01)",
+    "updatedAt": "2026-10-29"
+  },
+  "items": [
+    {
+      "id": "lib-quran-index",
+      "type": "reference",
+      "titleAr": "فهرس السور وبياناتها الوصفية",
+      "titleEn": "Surah index and metadata",
+      "descriptionAr": "أسماء السور بالعربية والإنجليزية وعدد الآيات وأنواع النزول.",
+      "descriptionEn": "Surah names in Arabic and English, ayah counts and revelation type.",
+      "sourceId": "alquran-cloud",
+      "status": "published"
+    },
+    {
+      "id": "lib-quran-text",
+      "type": "reference",
+      "titleAr": "نص المصحف (مرجع)",
+      "titleEn": "Mushaf text (reference)",
+      "descriptionAr": "يُفعَّل بعد ربط مصدر النص واعتماد الإسناد والرخصة.",
+      "descriptionEn": "Enabled once the text source, attribution and license are confirmed.",
+      "sourceId": "tanzil",
+      "status": "planned"
+    },
+    {
+      "id": "lib-hadith-sample",
+      "type": "hadith",
+      "titleAr": "عيّنة أحاديث للمراجعة",
+      "titleEn": "Hadith samples for review",
+      "descriptionAr": "عينات بانتظار مراجعة اللجنة الشرعية ومفتاح واجهة sunnah.com.",
+      "descriptionEn": "Samples awaiting the shariah review and the sunnah.com API key.",
+      "sourceId": "sunnah-com",
+      "status": "in_review"
+    },
+    {
+      "id": "lib-tafsir-pending",
+      "type": "tafsir",
+      "titleAr": "تفسير — بحاجة إلى فحص رخصة",
+      "titleEn": "Tafsir — license check required",
+      "descriptionAr": "مرشّح مبدئيًا؛ لا يُعرض للمستخدمين قبل توثيق الرخصة.",
+      "descriptionEn": "Candidate only; not shown to users until the license is documented.",
+      "sourceId": "internal-demo",
+      "status": "draft"
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "_meta": {
+    "dataset": "content-sources",
+    "purpose": "سجل المصادر وحقوق المعالجة — نسخة JSON مؤقتة من جدول content_sources",
+    "docs": "docs/04-content-sources.md",
+    "updatedAt": "2026-10-29"
+  },
+  "sources": [
+    {
+      "id": "tanzil",
+      "nameAr": "مشروع تنزيل — نص المصحف",
+      "nameEn": "Tanzil Project — Quran text",
+      "url": "https://tanzil.net",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://tanzil.net/docs/text_license",
+      "attribution": "Quran text from Tanzil.net",
+      "allowsProcessing": true,
+      "allowsCommercial": false,
+      "verificationStatus": "verified",
+      "verifiedAt": "2026-10-26",
+      "notesAr": "نسخ حرفي فقط بدون تعديل، مع ذكر المصدر ورابط tanzil.net. الترجمات غير تجارية (راجع R-5)."
+    },
+    {
+      "id": "alquran-cloud",
+      "nameAr": "Al-Quran Cloud — البيانات الوصفية والتلاوات",
+      "nameEn": "Al-Quran Cloud — metadata and recitations",
+      "url": "https://alquran.cloud",
+      "license": "Terms: non-commercial free use; commercial needs acknowledgement",
+      "licenseUrl": "https://alquran.cloud/terms-and-conditions",
+      "attribution": "Data from Al-Quran Cloud (Islamic Network)",
+      "allowsProcessing": true,
+      "allowsCommercial": false,
+      "verificationStatus": "verified",
+      "verifiedAt": "2026-10-29",
+      "notesAr": "المصدر المعتمد لجلب البيانات الوصفية للفهرس (أسماء السور وعدد الآيات). التلاوات مرخصة لغير تجاري."
+    },
+    {
+      "id": "sunnah-com",
+      "nameAr": "sunnah.com — الحديث",
+      "nameEn": "sunnah.com — Hadith",
+      "url": "https://sunnah.com/developers",
+      "license": "Official API with key; no scraping; no mass reproduction",
+      "licenseUrl": "https://sunnah.com/about",
+      "attribution": "Hadith data from sunnah.com",
+      "allowsProcessing": false,
+      "allowsCommercial": false,
+      "verificationStatus": "verified",
+      "verifiedAt": "2026-10-26",
+      "notesAr": "مختارات تعليمية مُسندة مسموحة؛ ممنوع استخلاص المجموعات كاملة. يلزم مفتاح API."
+    },
+    {
+      "id": "internal-demo",
+      "nameAr": "بيانات تجريبية داخلية",
+      "nameEn": "Internal demo dataset",
+      "url": null,
+      "license": "Internal test data — not for publication",
+      "licenseUrl": null,
+      "attribution": null,
+      "allowsProcessing": true,
+      "allowsCommercial": false,
+      "verificationStatus": "unverified",
+      "verifiedAt": null,
+      "notesAr": "عينات تجريبية للتصميم فقط. لا تُنشر كمحتوى موثق، وتبقى تحت المراجعة."
+    }
+  ]
+}

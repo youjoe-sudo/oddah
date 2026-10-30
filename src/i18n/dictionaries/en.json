@@ -40,7 +40,17 @@
     "intro": "Mushaf view, search and bookmarks — text from a cited, verified source.",
     "search": "Search the Quran…",
     "bookmarks": "My bookmarks",
-    "source": "Source and attribution are shown with every text."
+    "source": "Source and attribution are shown with every text.",
+    "index": "Surah index",
+    "number": "No.",
+    "surah": "Surah",
+    "ayahs": "Ayahs",
+    "ayahUnit": "ayahs",
+    "surahUnit": "surahs",
+    "revelation": "Revealed in",
+    "meccan": "Meccan",
+    "medinan": "Medinan",
+    "metadataNotice": "This page shows metadata only (names and ayah counts). The mushaf text is added once its source, attribution and license are confirmed."
   },
   "prayer": {
     "title": "Prayer and worship",
@@ -54,7 +64,18 @@
     "title": "Islamic library",
     "intro": "Verified content with clear sources and declared usage rights.",
     "source": "Source",
-    "license": "License"
+    "license": "License",
+    "demoData": "Local test data",
+    "verifiedSource": "Verified source",
+    "unverifiedSource": "Unverified source",
+    "status": {
+      "draft": "Draft",
+      "planned": "Planned",
+      "in_review": "In review",
+      "approved": "Approved",
+      "published": "Published",
+      "rejected": "Rejected"
+    }
   },
   "learn": {
     "title": "Learning and courses",

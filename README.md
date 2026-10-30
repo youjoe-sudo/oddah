@@ -15,6 +15,7 @@
 | YouTube / Creator Studio | **مرحلة تحقق** — لا وعود قبل POC وقياس فعلي |
 | المراجعة الشرعية | لجنة داخلية (2–3 أعضاء) + إحالة خارجية للخلاف |
 | التقنية | Next.js (TypeScript) + **Supabase** كقاعدة بيانات مُدارة مع RLS — طبقة وصول تُمكّن الاستبدال لاحقًا (`docs/08-supabase-setup.md`) |
+| **التخزين الحالي (مؤقت)** | **ملفات JSON محلية** (`src/data/`) خلف واجهة `src/lib/storage` — التبديل إلى Supabase بتغيير `DATA_PROVIDER` فقط (`docs/09-local-json-storage.md`) |
 
 ---
 
@@ -30,13 +31,16 @@ docs/
   06-roadmap.md           خارطة الطريق وسجل المخاطر
   07-data-model.md        نموذج البيانات وسياسات RLS
   08-supabase-setup.md    ربط Supabase والاستبدال لاحقًا
+  09-local-json-storage.md التخزين المؤقت بملفات JSON ومسار التبديل
 db/migrations/            ترحيلات قاعدة البيانات (مسودة مراجَعة)
 src/
   app/[locale]/           الصفحات (ar/en)
+  data/                   بيانات تجريبية محلية (مصادر، فهرس سور، أذكار، مكتبة)
   i18n/                   القواميس وإعداد اللغة
   components/ui/          مكونات نظام التصميم المشتركة
   lib/                    قاعدة البيانات، التحقق، التسجيل
-scripts/                  أدوات تشغيلية (ترحيل القاعدة)
+  lib/storage/            طبقة الوصول للبيانات (مزوّد JSON الآن)
+scripts/                  أدوات تشغيلية (ترحيل القاعدة، جلب البيانات الوصفية)
 ```
 
 ---
@@ -44,19 +48,26 @@ scripts/                  أدوات تشغيلية (ترحيل القاعدة)
 ## التشغيل
 
 ### المتطلبات
-- Node.js 20.10+ (مُختبَر على v26)
-- مشروع Supabase (المسار المعتمد) — أو Docker لتطوير محلي بديل
+- Node.js 20.10+
+- **لا حاجة لقاعدة بيانات الآن:** التخزين الحالي ملفات JSON محلية (`docs/09-local-json-storage.md`).
 
-### الخطوات
+### الخطوات (المسار الحالي)
 
 ```bash
 npm install
-cp .env.example .env          # ثم ضع DATABASE_URL من Supabase (مع ?sslmode=require)
-npm run db:migrate            # ينشئ الدور وسياسات RLS على القاعدة
+cp .env.example .env          # الإعدادات الافتراضية تكفي: DATA_PROVIDER=json
 npm run dev                   # http://localhost:3000
 ```
 
-**بدون Supabase (تطوير محلي بديل):**
+### لاحقًا — عند التبديل إلى Supabase
+
+```bash
+# ضع DATABASE_URL من Supabase في .env (مع ?sslmode=require)
+npm run db:migrate            # ينشئ الدور وسياسات RLS على القاعدة
+# ثم DATA_PROVIDER=postgres بعد إضافة مزوّد Postgres (docs/09 §5)
+```
+
+**بديل محلي لقاعدة البيانات (اختياري):**
 ```bash
 docker compose up -d          # PostgreSQL محلي معزول
 npm run db:migrate
@@ -70,7 +81,7 @@ npm run db:migrate
 | `npm run build` | بناء الإنتاج |
 | `npm run lint` | فحص الأسلوب |
 | `npm run typecheck` | فحص الأنواع |
-| `npm test` | الاختبارات: اكتمال القاموس + **8 اختبارات RLS على Postgres حقيقي مدمج** |
+| `npm test` | الاختبارات: القاموس + طبقة التخزين المحلية (بوابة المصدر/النشر) + **8 اختبارات RLS على Postgres مدمج** |
 | `TEST_DATABASE_URL=... npm test` | تشغيل اختبارات RLS على قاعدة حقيقية (Supabase) |
 | `npm run db:migrate` | تطبيق ترحيلات قاعدة البيانات |
 
@@ -80,7 +91,7 @@ npm run db:migrate
 
 - [ ] `npm run typecheck && npm test && npm run lint` خضراء.
 - [ ] أي نص جديد موجود في القاموس بالعربية والإنجليزية.
-- [ ] أي محتوى جديد له صف في `content_sources` بحالة موثّقة.
+- [ ] أي محتوى جديد له مصدر موثّق (صف في `content_sources` أو مدخل verified في `src/data/sources.json`).
 - [ ] تحديث حالة المتطلب في `docs/01-prd.md`.
 - [ ] لا مفاتيح أو رموز وصول في حزمة المتصفح أو السجلات.
 

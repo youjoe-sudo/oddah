@@ -1,3 +1,4 @@
+import { BookOpen } from 'lucide-react';
 import { resolvePage } from '@/i18n/page';
 import { Container } from '@/components/ui/Container';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -29,47 +30,61 @@ export default async function LibraryPage({ params }: Props) {
         intro={dict.library.intro}
         badge={<StatusBadge tone="verifying" label={dict.library.demoData} />}
       />
-      <Container className="py-8">
-        <div className="grid gap-4 md:grid-cols-2">
+
+      <Container className="py-8 md:py-10">
+        <ul className="grid gap-4 lg:grid-cols-2">
           {items.map((item) => {
             const source = sourceById.get(item.sourceId);
             const verified = source?.verificationStatus === 'verified';
+
             return (
-              <Card key={item.id} className="flex flex-col">
-                <div className="flex items-start justify-between gap-3">
-                  <h2 className="font-semibold text-slate-900">
-                    {locale === 'ar' ? item.titleAr : item.titleEn}
-                  </h2>
-                  <StatusBadge
-                    tone={statusTone[item.status]}
-                    label={dict.library.status[item.status]}
-                  />
-                </div>
-                <p className="mt-2 flex-1 text-sm text-slate-600">
-                  {locale === 'ar' ? item.descriptionAr : item.descriptionEn}
-                </p>
-                <dl className="mt-4 space-y-1 border-t border-slate-100 pt-3 text-xs text-slate-500">
-                  <div className="flex flex-wrap gap-x-2">
-                    <dt className="font-medium text-slate-600">{dict.library.source}:</dt>
-                    <dd>{source ? (locale === 'ar' ? source.nameAr : source.nameEn) : item.sourceId}</dd>
+              <li key={item.id}>
+                <Card className="flex h-full flex-col" padding="md">
+                  <div className="flex items-start gap-3.5">
+                    <span
+                      aria-hidden="true"
+                      className="inline-flex size-10 shrink-0 items-center justify-center rounded-md bg-gold-soft text-gold-strong"
+                    >
+                      <BookOpen className="size-5" strokeWidth={1.75} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <h2 className="text-heading-sm font-semibold text-foreground">
+                          {locale === 'ar' ? item.titleAr : item.titleEn}
+                        </h2>
+                        <StatusBadge
+                          tone={statusTone[item.status]}
+                          label={dict.library.status[item.status]}
+                        />
+                      </div>
+                      <p className="mt-2 text-sm text-muted">
+                        {locale === 'ar' ? item.descriptionAr : item.descriptionEn}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-x-2">
-                    <dt className="font-medium text-slate-600">{dict.library.license}:</dt>
-                    <dd>{source?.license ?? '—'}</dd>
+
+                  <dl className="mt-5 flex-1 space-y-1.5 border-t border-line pt-3 text-xs text-muted">
+                    <div className="flex flex-wrap gap-x-2">
+                      <dt className="font-semibold text-foreground">{dict.library.source}:</dt>
+                      <dd>{source ? (locale === 'ar' ? source.nameAr : source.nameEn) : item.sourceId}</dd>
+                    </div>
+                    <div className="flex flex-wrap gap-x-2">
+                      <dt className="font-semibold text-foreground">{dict.library.license}:</dt>
+                      <dd>{source?.license ?? '—'}</dd>
+                    </div>
+                  </dl>
+
+                  <div className="mt-3">
+                    <StatusBadge
+                      tone={verified ? 'released' : 'blocked'}
+                      label={verified ? dict.library.verifiedSource : dict.library.unverifiedSource}
+                    />
                   </div>
-                </dl>
-                <div className="mt-3">
-                  <StatusBadge
-                    tone={verified ? 'released' : 'blocked'}
-                    label={
-                      verified ? dict.library.verifiedSource : dict.library.unverifiedSource
-                    }
-                  />
-                </div>
-              </Card>
+                </Card>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </Container>
     </>
   );

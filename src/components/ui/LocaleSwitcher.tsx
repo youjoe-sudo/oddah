@@ -3,14 +3,18 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { locales, switchLocaleInPath, type Locale } from '@/i18n/config';
+import { cn } from '@/lib/cn';
 
 /** مبدّل اللغة: يغيّر جزء اللغة في المسار الحالي ويحافظ على بقية المسار. */
 export function LocaleSwitcher({ current, label }: { current: Locale; label: string }) {
   const pathname = usePathname() || `/${current}`;
 
   return (
-    <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white p-1">
-      <span className="px-2 text-xs text-slate-500">{label}</span>
+    <nav
+      aria-label={label}
+      className="inline-flex items-center rounded-pill border border-line bg-surface p-0.5"
+    >
+      <span className="sr-only">{label}</span>
       {locales.map((locale) => {
         const active = locale === current;
         return (
@@ -19,16 +23,17 @@ export function LocaleSwitcher({ current, label }: { current: Locale; label: str
             href={switchLocaleInPath(pathname, locale)}
             hrefLang={locale}
             aria-current={active ? 'true' : undefined}
-            className={`rounded-md px-2.5 py-1 text-sm font-medium transition ${
+            className={cn(
+              'inline-flex min-h-11 min-w-11 items-center justify-center rounded-pill px-2.5 text-xs font-semibold transition-colors',
               active
-                ? 'bg-slate-900 text-white'
-                : 'text-slate-600 hover:bg-slate-100'
-            }`}
+                ? 'bg-primary text-on-primary'
+                : 'text-muted hover:bg-surface-muted hover:text-foreground',
+            )}
           >
             {locale === 'ar' ? 'عربي' : 'EN'}
           </Link>
         );
       })}
-    </div>
+    </nav>
   );
 }

@@ -4,7 +4,16 @@ import type { Locale } from '@/i18n/config';
 import { Container } from './Container';
 import { LocaleSwitcher } from './LocaleSwitcher';
 
-const navKeys = ['home', 'quran', 'prayer', 'library', 'learn', 'studio', 'admin'] as const;
+const navKeys = [
+  'home',
+  'quran',
+  'prayer',
+  'library',
+  'learn',
+  'studio',
+  'admin',
+  'bookmarks',
+] as const;
 
 const navPaths: Record<(typeof navKeys)[number], string | null> = {
   home: null,
@@ -14,6 +23,7 @@ const navPaths: Record<(typeof navKeys)[number], string | null> = {
   learn: 'learn',
   studio: 'studio',
   admin: 'admin',
+  bookmarks: 'bookmarks',
 };
 
 export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary }) {

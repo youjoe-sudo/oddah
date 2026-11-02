@@ -1,10 +1,11 @@
 'use client';
 
-import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { Compass } from 'lucide-react';
 import { defaultLocale, isLocale, type Locale } from '@/i18n/config';
 import ar from '@/i18n/dictionaries/ar.json';
 import en from '@/i18n/dictionaries/en.json';
+import { LinkButton } from './Button';
 
 /** محتوى 404 ثنائي اللغة — يعمل من الحد الجذري ومن حد لغة محددة. */
 export function LocalizedNotFound() {
@@ -14,15 +15,18 @@ export function LocalizedNotFound() {
   const dict = locale === 'ar' ? ar : en;
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-20 text-center">
-      <h1 className="text-2xl font-bold text-slate-900">{dict.notFound.title}</h1>
-      <p className="mt-3 text-slate-600">{dict.notFound.body}</p>
-      <Link
-        href={`/${locale}`}
-        className="mt-6 inline-block rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-700"
+    <div className="mx-auto flex min-h-[60vh] max-w-xl flex-col items-center justify-center px-4 py-20 text-center">
+      <span
+        aria-hidden="true"
+        className="mb-5 inline-flex size-14 items-center justify-center rounded-pill bg-surface-muted text-gold-strong"
       >
+        <Compass className="size-7" strokeWidth={1.75} />
+      </span>
+      <h1 className="text-heading-lg font-bold text-foreground">{dict.notFound.title}</h1>
+      <p className="mt-3 text-muted">{dict.notFound.body}</p>
+      <LinkButton href={`/${locale}`} className="mt-6">
         {dict.notFound.back}
-      </Link>
+      </LinkButton>
     </div>
   );
 }

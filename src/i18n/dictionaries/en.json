@@ -1,7 +1,14 @@
 {
   "meta": {
-    "title": "Islamic Platform",
-    "description": "Quran, worship and a verified library — in Arabic and English"
+    "title": "ODDAH",
+    "description": "Quran, worship and a verified library — your companion for Quran, knowledge and worship."
+  },
+  "a11y": {
+    "skipToContent": "Skip to content"
+  },
+  "brand": {
+    "tagline": "Your companion for Quran, knowledge, worship and lasting impact.",
+    "promise": "Your companion"
   },
   "nav": {
     "home": "Home",
@@ -11,7 +18,12 @@
     "learn": "Learn",
     "studio": "Studio",
     "admin": "Admin",
-    "language": "Language"
+    "bookmarks": "Bookmarks",
+    "language": "Language",
+    "main": "Main navigation",
+    "theme": "Toggle theme",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "home": {
     "hero": {
@@ -22,6 +34,16 @@
       "quran": "Open the mushaf",
       "prayer": "Prayer times",
       "library": "Browse the library"
+    },
+    "quick": {
+      "heading": "Start here",
+      "body": "Shortcuts to the sections you will use most.",
+      "quran": "Read, search and bookmark",
+      "prayer": "Times and qibla",
+      "adhkar": "Daily adhkar and duas",
+      "library": "Verified sources",
+      "learn": "Lessons and courses",
+      "open": "Open section"
     },
     "status": {
       "heading": "Platform status",
@@ -64,7 +86,9 @@
     "searchResults": "Results: {count}",
     "searchTruncated": "Showing the first {limit} results — refine your search.",
     "searchEmpty": "No matching results.",
-    "searchAyah": "Ayah {ayah}"
+    "searchAyah": "Ayah {ayah}",
+    "saveAyah": "Save",
+    "savedAyah": "Saved"
   },
   "prayer": {
     "title": "Prayer and worship",
@@ -108,10 +132,22 @@
     },
     "gate": "These services are not available to users yet."
   },
+  "bookmarks": {
+    "title": "Reading bookmarks",
+    "intro": "Ayahs you saved on this device.",
+    "empty": "No bookmarks yet. Open any surah and press “Save” next to an ayah.",
+    "remove": "Remove",
+    "open": "Open ayah"
+  },
   "notFound": {
     "title": "Page not found",
     "body": "The link may have changed or the page was removed.",
     "back": "Back to home"
+  },
+  "error": {
+    "title": "This page could not load",
+    "body": "An unexpected error occurred. Try again, or come back later if the problem continues.",
+    "retry": "Try again"
   },
   "footer": {
     "docs": "Product documents and plans",

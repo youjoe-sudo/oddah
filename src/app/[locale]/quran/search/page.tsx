@@ -1,7 +1,12 @@
 import Link from 'next/link';
+import { Search, SearchX } from 'lucide-react';
 import { resolvePage } from '@/i18n/page';
 import { Container } from '@/components/ui/Container';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { Card } from '@/components/ui/Card';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { getContentStorage } from '@/lib/storage';
 import { searchQuran } from '@/lib/quran-search';
 
@@ -31,74 +36,112 @@ export default async function QuranSearchPage({ params, searchParams }: Props) {
       <PageHeader
         title={dict.quran.searchTitle}
         intro={dict.quran.searchHint}
-        badge={
-          <Link href={`/${locale}/quran`} className="text-sm text-sky-700 underline">
+        actions={
+          <Link
+            href={`/${locale}/quran`}
+            className="inline-flex min-h-11 items-center text-sm font-semibold text-forest underline-offset-4 hover:underline"
+          >
             {dict.quran.backToIndex}
           </Link>
         }
       />
-      <Container className="py-8">
-        <form action={`/${locale}/quran/search`} method="get" className="flex flex-wrap gap-2">
-          <input
+
+      <Container className="py-8 md:py-10">
+        <form
+          action={`/${locale}/quran/search`}
+          method="get"
+          role="search"
+          className="flex flex-col gap-2 sm:flex-row"
+        >
+          <label htmlFor="quran-search" className="sr-only">
+            {dict.quran.searchTitle}
+          </label>
+          <Input
+            id="quran-search"
             type="search"
             name="q"
             defaultValue={query}
             placeholder={dict.quran.search}
-            className="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-4 py-2 text-slate-900 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+            className="flex-1"
           />
-          <button
-            type="submit"
-            className="rounded-lg bg-slate-900 px-5 py-2 font-medium text-white hover:bg-slate-800"
-          >
+          <Button type="submit" className="sm:w-auto">
+            <Search aria-hidden="true" className="size-4" strokeWidth={1.75} />
             {dict.quran.searchGo}
-          </button>
+          </Button>
         </form>
 
-        {query.trim().length >= 2 && (
-          <div className="mt-6 space-y-3">
-            <p className="text-sm text-slate-600">
+        {query.trim().length < 2 ? (
+          <Card variant="muted" className="mt-6 border-dashed">
+            <p className="flex items-start gap-2 text-sm text-muted">
+              <Search aria-hidden="true" className="mt-0.5 size-4 shrink-0" strokeWidth={1.75} />
+              {dict.quran.searchHint}
+            </p>
+          </Card>
+        ) : (
+          <div className="mt-6 space-y-4">
+            <p className="text-sm text-muted">
               {fill(dict.quran.searchResults, { count: result.total })}
             </p>
-            {result.truncated && (
-              <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+
+            {result.truncated ? (
+              <p className="rounded-md border border-warning/25 bg-warning-surface px-4 py-3 text-sm text-warning">
                 {fill(dict.quran.searchTruncated, { limit: result.matches.length })}
               </p>
-            )}
-            {result.total === 0 && (
-              <p className="rounded-lg border border-slate-200 bg-white px-4 py-6 text-slate-600">
-                {dict.quran.searchEmpty}
-              </p>
-            )}
+            ) : null}
 
-            <ol className="space-y-3">
-              {result.matches.map((match) => {
-                const surah = surahByNumber.get(match.surah);
-                const surahName = surah ? (locale === 'ar' ? surah.nameAr : surah.nameEn) : String(match.surah);
-                return (
-                  <li
-                    key={`${match.surah}:${match.ayah}`}
-                    className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+            {result.total === 0 ? (
+              <EmptyState
+                icon={SearchX}
+                title={dict.quran.searchEmpty}
+                body={dict.quran.searchHint}
+                action={
+                  <Link
+                    href={`/${locale}/quran`}
+                    className="inline-flex min-h-11 items-center text-sm font-semibold text-forest underline-offset-4 hover:underline"
                   >
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <Link
-                        href={`/${locale}/quran/${match.surah}#ayah-${match.ayah}`}
-                        className="text-sm font-medium text-sky-700 underline"
-                      >
-                        {surahName} · {match.ayah}
-                      </Link>
-                      <span className="text-xs text-slate-500">
-                        {fill(dict.quran.searchAyah, { ayah: match.ayah })}
-                      </span>
-                    </div>
-                    <p dir="rtl" lang="ar" className="mt-2 text-right font-serif text-lg leading-loose text-slate-900">
-                      {match.before}
-                      <mark className="rounded bg-amber-200 px-0.5 text-slate-900">{match.match}</mark>
-                      {match.after}
-                    </p>
-                  </li>
-                );
-              })}
-            </ol>
+                    {dict.quran.backToIndex}
+                  </Link>
+                }
+              />
+            ) : (
+              <ol className="space-y-3">
+                {result.matches.map((match) => {
+                  const surah = surahByNumber.get(match.surah);
+                  const surahName = surah
+                    ? locale === 'ar'
+                      ? surah.nameAr
+                      : surah.nameEn
+                    : String(match.surah);
+
+                  return (
+                    <li
+                      key={`${match.surah}:${match.ayah}`}
+                      className="rounded-lg border border-line bg-surface p-4 shadow-card sm:p-5"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <Link
+                          href={`/${locale}/quran/${match.surah}#ayah-${match.ayah}`}
+                          className="inline-flex min-h-9 items-center text-sm font-semibold text-forest underline-offset-4 hover:underline"
+                        >
+                          {surahName} · {match.ayah}
+                        </Link>
+                        <span className="rounded-pill bg-surface-muted px-2.5 py-1 text-xs text-muted">
+                          {fill(dict.quran.searchAyah, { ayah: match.ayah })}
+                        </span>
+                      </div>
+
+                      <p dir="rtl" lang="ar" className="quran-text mt-3 text-foreground">
+                        {match.before}
+                        <mark className="rounded-sm bg-gold/40 px-0.5 text-foreground">
+                          {match.match}
+                        </mark>
+                        {match.after}
+                      </p>
+                    </li>
+                  );
+                })}
+              </ol>
+            )}
           </div>
         )}
       </Container>

@@ -1,24 +1,319 @@
 @import "tailwindcss";
 
-@theme {
+/*
+ * ODDAH — Design tokens
+ * المصدر المركزي الوحيد للألوان والخطوط والزوايا والظلال.
+ * لا تُكتب قيم Hex داخل الصفحات أو المكونات.
+ */
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme inline {
+  /* Typography */
   --font-sans:
-    "Segoe UI", Tahoma, "Noto Sans Arabic", "Helvetica Neue", Arial, sans-serif;
+    var(--font-inter), "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-arabic:
+    var(--font-tajawal), "Tajawal", "Noto Sans Arabic", "Segoe UI", Tahoma,
+    sans-serif;
+  --font-quran:
+    var(--font-quran-face), "Amiri Quran", "Scheherazade New", serif;
+
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.5;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.65;
+  --text-md: 1rem;
+  --text-md--line-height: 1.75;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.7;
+  --text-heading-sm: 1.25rem;
+  --text-heading-sm--line-height: 1.45;
+  --text-heading-md: 1.5rem;
+  --text-heading-md--line-height: 1.35;
+  --text-heading-lg: 2rem;
+  --text-heading-lg--line-height: 1.25;
+  --text-display: 2.5rem;
+  --text-display--line-height: 1.2;
+
+  /* Brand palette */
+  --color-navy-900: #0f2a44;
+  --color-navy-800: #1a2e3f;
+  --color-forest-700: #1e4d3b;
+  --color-forest-600: #2e7d62;
+  --color-gold-500: #d4af7c;
+  --color-cream-50: #f7f5ef;
+  --color-gray-100: #e5e7eb;
+  --color-gray-500: #6b7280;
+  --color-gray-900: #17212b;
+  --color-purple-500: #8b5cf6;
+
+  /* Semantic surfaces and text */
+  --color-background: var(--od-background);
+  --color-surface: var(--od-surface);
+  --color-surface-muted: var(--od-surface-muted);
+  --color-surface-sunken: var(--od-surface-sunken);
+  --color-foreground: var(--od-foreground);
+  --color-muted: var(--od-muted);
+  --color-subtle: var(--od-subtle);
+  --color-line: var(--od-line);
+  --color-line-strong: var(--od-line-strong);
+
+  /* Interactive brand */
+  --color-primary: var(--od-primary);
+  --color-primary-hover: var(--od-primary-hover);
+  --color-on-primary: var(--od-on-primary);
+  --color-primary-soft: var(--od-primary-soft);
+  --color-brand: var(--od-brand);
+  --color-brand-soft: var(--od-brand-soft);
+  --color-forest: var(--od-forest);
+  --color-forest-hover: var(--od-forest-hover);
+  --color-forest-soft: var(--od-forest-soft);
+  --color-gold: var(--od-gold);
+  --color-gold-strong: var(--od-gold-strong);
+  --color-gold-soft: var(--od-gold-soft);
+  --color-on-gold: var(--od-on-gold);
+  --color-focus: var(--od-focus);
+
+  /* Sidebar */
+  --color-sidebar: var(--od-sidebar);
+  --color-sidebar-foreground: var(--od-sidebar-foreground);
+  --color-sidebar-muted: var(--od-sidebar-muted);
+  --color-sidebar-line: var(--od-sidebar-line);
+  --color-sidebar-active: var(--od-sidebar-active);
+
+  /* Status */
+  --color-success: var(--od-success);
+  --color-success-surface: var(--od-success-surface);
+  --color-warning: var(--od-warning);
+  --color-warning-surface: var(--od-warning-surface);
+  --color-danger: var(--od-danger);
+  --color-danger-surface: var(--od-danger-surface);
+  --color-info: var(--od-info);
+  --color-info-surface: var(--od-info-surface);
+  --color-accent: var(--od-accent);
+  --color-accent-surface: var(--od-accent-surface);
+
+  /* Radii */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-pill: 999px;
+
+  /* Shadows — soft, functional separation only */
+  --shadow-soft: 0 1px 2px rgb(15 42 68 / 0.04), 0 1px 3px rgb(15 42 68 / 0.06);
+  --shadow-card:
+    0 1px 2px rgb(15 42 68 / 0.04), 0 6px 18px -12px rgb(15 42 68 / 0.18);
+  --shadow-raised:
+    0 2px 4px rgb(15 42 68 / 0.05), 0 18px 36px -22px rgb(15 42 68 / 0.28);
+
+  /* Motion */
+  --ease-calm: cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-rise: rise 0.35s var(--ease-calm) both;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+:root {
+  color-scheme: light;
+
+  --od-background: #f7f5ef;
+  --od-surface: #ffffff;
+  --od-surface-muted: #f1eee6;
+  --od-surface-sunken: #ece8de;
+  --od-foreground: #17212b;
+  --od-muted: #59646f;
+  --od-subtle: #5c6b78;
+  --od-line: #e5e7eb;
+  --od-line-strong: #d3d7dd;
+
+  --od-primary: #0f2a44;
+  --od-primary-hover: #173b5c;
+  --od-on-primary: #ffffff;
+  --od-primary-soft: #e9eef3;
+  --od-brand: #0f2a44;
+  --od-brand-soft: #e9eef3;
+  --od-forest: #1e4d3b;
+  --od-forest-hover: #2e7d62;
+  --od-forest-soft: #e7f0eb;
+  --od-gold: #d4af7c;
+  --od-gold-strong: #8a6432;
+  --od-gold-soft: #f6eddd;
+  --od-on-gold: #0f2a44;
+  --od-focus: #1e4d3b;
+
+  --od-sidebar: #0f2a44;
+  --od-sidebar-foreground: #f4f1e9;
+  --od-sidebar-muted: #a9b8c6;
+  --od-sidebar-line: rgb(255 255 255 / 0.1);
+  --od-sidebar-active: rgb(212 175 124 / 0.14);
+
+  --od-success: #1e4d3b;
+  --od-success-surface: #e7f2ec;
+  --od-warning: #7a4e12;
+  --od-warning-surface: #fbf0dc;
+  --od-danger: #8e2f2f;
+  --od-danger-surface: #fbeaea;
+  --od-info: #1b4b73;
+  --od-info-surface: #e8eff6;
+  --od-accent: #5b3fb8;
+  --od-accent-surface: #f1ebfe;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --od-background: #0a1826;
+  --od-surface: #102436;
+  --od-surface-muted: #0d1e2e;
+  --od-surface-sunken: #081521;
+  --od-foreground: #f2f0ea;
+  --od-muted: #b4c0cb;
+  --od-subtle: #8fa0ae;
+  --od-line: #213d55;
+  --od-line-strong: #2d4c68;
+
+  --od-primary: #2e7d62;
+  --od-primary-hover: #369276;
+  --od-on-primary: #ffffff;
+  --od-primary-soft: #143327;
+  --od-brand: #d4af7c;
+  --od-brand-soft: #1a3448;
+  --od-forest: #7fc3a7;
+  --od-forest-hover: #9ad6bd;
+  --od-forest-soft: #123024;
+  --od-gold: #d4af7c;
+  --od-gold-strong: #e0c397;
+  --od-gold-soft: #332816;
+  --od-on-gold: #0f2a44;
+  --od-focus: #d4af7c;
+
+  --od-sidebar: #081521;
+  --od-sidebar-foreground: #f2f0ea;
+  --od-sidebar-muted: #9db0c1;
+  --od-sidebar-line: rgb(255 255 255 / 0.08);
+  --od-sidebar-active: rgb(212 175 124 / 0.16);
+
+  --od-success: #9bd3b6;
+  --od-success-surface: #133327;
+  --od-warning: #e8c48a;
+  --od-warning-surface: #3a2c16;
+  --od-danger: #f0a8a8;
+  --od-danger-surface: #3b1d1f;
+  --od-info: #a9cbe8;
+  --od-info-surface: #142e44;
+  --od-accent: #c4b1fb;
+  --od-accent-surface: #241a3d;
 }
 
 @layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-line);
+  }
+
   html {
     -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    scroll-padding-block-start: 5rem;
   }
 
   body {
-    background-color: #f8fafc;
-    color: #0f172a;
+    min-height: 100dvh;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-arabic);
+    font-size: var(--text-md);
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  html[lang="en"] body {
     font-family: var(--font-sans);
   }
 
-  /* تباين مريح للنص العربي الطويل */
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 700;
+    line-height: 1.3;
+    text-wrap: balance;
+  }
+
   p,
   li {
-    line-height: 1.9;
+    line-height: 1.85;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-gold) 42%, transparent);
+    color: var(--color-foreground);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  [dir="rtl"] .flip-rtl {
+    transform: scaleX(-1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .skip-link {
+    position: fixed;
+    inset-block-start: 0.75rem;
+    inset-inline-start: 0.75rem;
+    z-index: 100;
+    transform: translateY(-200%);
+    border-radius: var(--radius-md);
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+    padding: 0.625rem 1rem;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    transition: transform 150ms var(--ease-calm);
+  }
+
+  .skip-link:focus,
+  .skip-link:focus-visible {
+    transform: translateY(0);
+  }
+
+  /* النص القرآني: خط مخصص، مساحة قراءة مريحة، بلا زخرفة خلفه. */
+  .quran-text {
+    font-family: var(--font-quran-face), "Amiri Quran", "Scheherazade New", serif;
+    font-size: clamp(1.5rem, 1.2rem + 1.1vw, 2rem);
+    line-height: 2.1;
+    letter-spacing: 0;
+    word-spacing: 0.04em;
+    text-align: start;
   }
 }
